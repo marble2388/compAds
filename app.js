@@ -74,6 +74,32 @@ app.use(passport.session());
 var Account = require('./models/account');
 passport.use(Account.createStrategy());
 
+//facebook login auth
+var FacebookStrategy = require('passport-facebook').Strategy;
+passport.use(new FacebookStrategy({
+        clientID: '414665112291026',
+        clientSecret: '224f9b9d870cca4045b408a0e5729ee9',
+        callbackURL: 'http://localhost:3000/facebook/callback'
+    },
+    function(accessToken, refreshToken, profile, cb) {
+        Account.findOrCreate({ facebookId: profile.id }, function (err, user) {
+            return cb(err, user);
+        });
+    }
+));
+//twitter login auth
+var TwitterStrategy = require('passport-twitter').Strategy;
+passport.use(new TwitterStrategy({
+        consumerKey: '8nT83eQxb5efkpxQ5mRQf5FJV ',
+        consumerSecret: 'oayzMPaLwoM6serRDHcGQnAyZpOYUU5fY13ly9j9Fw0N95DZLh\n',
+        callbackURL: "http://localhost:3000/twitter/callback"
+    },
+    function(token, tokenSecret, profile, cb) {
+        User.findOrCreate({ twitterId: profile.id }, function (err, user) {
+            return cb(err, user);
+        });
+    }
+));
 
 // manage user login status through the db
 passport.serializeUser(Account.serializeUser());

@@ -9,14 +9,22 @@
 
 
 </head>
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
     <ul class="nav navbar-nav">
-    <li><a href="/">HOME OF ADS</a></li>
-    <li><a href="/ads">AD LISTINGS</a></li>
-    <li><a href="/login">Login</a></li>
-    <li><a href="/register">Register</a></li>
+        <li><a href="/">HOME OF ADS</a></li>
+        <li><a href="/ads">AD LISTINGS</a></li>
 
+        <% if (!user) { %>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/login">Login</a></li>
+    </ul>
+        <% }
+        else { %>
         <li><a href="/logout">Logout</a></li>
     </ul>
+    <div class="navbar-text pull-right">
+        <%= user.username %>
+    </div>
+    <% } %>
+
 </nav>
-</html>
