@@ -74,7 +74,7 @@ app.use(passport.session());
 var Account = require('./models/account');
 passport.use(Account.createStrategy());
 
-//facebook login auth
+//facebook login auth works i can log in with my account no issues.
 var FacebookStrategy = require('passport-facebook').Strategy;
 passport.use(new FacebookStrategy({
         clientID: '414665112291026',
@@ -82,24 +82,63 @@ passport.use(new FacebookStrategy({
         callbackURL: 'http://localhost:3000/facebook/callback'
     },
     function(accessToken, refreshToken, profile, cb) {
-        Account.findOrCreate({ facebookId: profile.id }, function (err, user) {
-            return cb(err, user);
+        Account.findOne({ facebookId: profile.displayName }, function (err, user) {
+           if(err){
+               console.log(err);
+           }
+           else{
+               if(user !==null){
+                   cb(null,user);
+               }else {
+                   user = new Account({
+                       FacebookId: profile.id,
+                       username: profile.displayName
+                   });
+                   user.save(function(err){
+                       if(err){
+                           console.log(err);
+                       }else{
+                           cb(null,user);
+                       }
+                   });
+               }
+           }
         });
     }
 ));
-//twitter login auth
+//twitter login auth doesnt work button is pretty
 var TwitterStrategy = require('passport-twitter').Strategy;
 passport.use(new TwitterStrategy({
         consumerKey: '8nT83eQxb5efkpxQ5mRQf5FJV ',
         consumerSecret: 'oayzMPaLwoM6serRDHcGQnAyZpOYUU5fY13ly9j9Fw0N95DZLh\n',
         callbackURL: "http://localhost:3000/twitter/callback"
     },
-    function(token, tokenSecret, profile, cb) {
-        User.findOrCreate({ twitterId: profile.id }, function (err, user) {
-            return cb(err, user);
+    function(accessToken, refreshToken, profile, cb) {
+        Account.findOne({ twitterId: profile.displayName }, function (err, user) {
+            if(err){
+                console.log(err);
+            }
+            else{
+                if(user !==null){
+                    cb(null,user);
+                }else {
+                    user = new Account({
+                        twitterId: profile.id,
+                        username: profile.displayName
+                    });
+                    user.save(function(err){
+                        if(err){
+                            console.log(err);
+                        }else{
+                            cb(null,user);
+                        }
+                    });
+                }
+            }
         });
     }
 ));
+
 
 // manage user login status through the db
 passport.serializeUser(Account.serializeUser());
